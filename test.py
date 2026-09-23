@@ -1,24 +1,20 @@
 from collections import deque
-p = []
 
-def read_state():
-    file=open("input.txt","r")
-    text=file.read()
-    file.close()
-    p=text.split(",")
-    return (int(p[0]), int(p[1]), int(p[2]), int(p[3]), p[4].strip().upper())
 
-def is_valid(s):
-    m_left, c_left, m_right, c_right, boat = s
-    if m_left < 0 or c_left < 0 or m_right < 0 or c_right < 0:
+
+
+def is_valid(state):
+    ml,cl,mr,cr,side=state
+
+    if ml < 0 or ml > 3 or cl < 0 or cl > 3 or mr < 0 or mr > 3 or cr < 0 or cr > 3:
         return False
-    if m_left > 0 and c_left > m_left:
+    if cl>ml and ml>0:
         return False
-    if m_right > 0 and c_right > m_right:
+    if cr>mr and mr>0:
         return False
     return True
 
-def successor(state):
+def get_valid_chidern(state):
     ml,cl,mr,cr,side=state
     childern=[]
 
@@ -66,39 +62,21 @@ def successor(state):
 
     return childern
 
-def show(path):
-    steps = []
-    for s in path:
-        string = "(%d, %d, %d, %d, %s)" %s
-        steps.append(string)
+def main():
 
-    return " -> ".join(steps)
+    file=open("input.txt","r")
+    text=file.read()
+    file.close()
 
+    parts=text.split(",")
 
-def DFS(start):
-    fringe = [[start]]
-    expand = 0
+    ml=int(parts[0])
+    cl=int(parts[1])
+    mr=int(parts[2])
+    cr=int(parts[3])
+    side=parts[4].strip()
 
-    while fringe:
-        p = fringe.pop()
-        s = p[-1]
-
-        if s[0] == 0 and s[1] == 0:
-            return p, expand
-        expand += 1
-
-        for next in reversed(successor(s)):
-            if next not in p:
-                fringe.append(p + [next])
-
-    return None, expand
-
-
-
-
-#BFS
-def BFS():
-    start=read_state()
+    start=(ml,cl,mr,cr,side)
 
     #this variable keeps track of the expansions that happens
     expansions=0
@@ -113,29 +91,17 @@ def BFS():
         if state==(0,0,3,3,"R"):
             
             print("The solution of Q1.1.b (BFS) is:")
-            print("Solution Path:", show(path_list))
+            print("Solution Path:", path_list)
             print("Total cost =", cost)
             print("Number of node expansions =", expansions)
             break
 
         expansions+=1
 
-        for node in successor(state):
+        for node in get_valid_chidern(state):
             q.append((node, cost+1, path_list+[node]))
 
-#question 1.1a print answer
-start = read_state()
-path, expand = DFS(start)
-
-print("The solution of 1.1.a (DFS) is:")
-print("Solution Path: ", show(path))
-print("Total cost =", len(path) - 1)
-print("Number of node expansions = ",expand)
-
-BFS()
-
-
-
-
         
-  
+
+if __name__ == "__main__":
+    main()
