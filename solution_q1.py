@@ -121,7 +121,8 @@ def BFS():
         expansions+=1
 
         for node in successor(state):
-            q.append((node, cost+1, path_list+[node]))
+            if node not in path_list:
+                q.append((node, cost+1, path_list+[node]))
 
 #question 1.1a print answer
 start = read_state()
