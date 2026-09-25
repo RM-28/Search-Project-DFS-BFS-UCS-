@@ -19,14 +19,13 @@ def is_valid(s):
         return False
     return True
 
-def model_a(m, c, boat):
-    return 2*m + c
+def heuristic_one(state):
+    ml,cl,mr,cr,side=state
+    return 2*ml+cl
 
-def model_b(m, c, boat):
-    if boat == "L":
-        return 2
-    else:
-        return 1
+def heuristic_two(state):
+    ml,cl,mr,cr,side=state
+    return (2*ml +cl + 2)//3
 
 def successor(state):
     ml,cl,mr,cr,side=state
@@ -85,7 +84,7 @@ def show(path):
     return " -> ".join(steps)
 
 
-def ucs(state, model):
+def A_star(start, model):
 
     
     expand = 0
@@ -94,20 +93,26 @@ def ucs(state, model):
     
 
     q = []
-    heapq.heappush(q, (0, tie_breaker, state, [state]))
+    
+    #(f cost, tie breaker, actual cost, state, path)
+    heapq.heappush(q, (model(start), tie_breaker, 0, start, [start]))
 
     while q:
         i = heapq.heappop(q)
-        cost = i[0]
-        state = i[2]
-        path = i[3]
+
+        f_cost = i[0]
+        state = i[3]
+        cost = i[2]
+        path = i[4]
 
         if state == (0,0,3,3,"R"):
-            if model == model_a:
-                print("The solution of Q2.1 (UCS, cost model A) is:")
-            if model == model_b:
-                print("The solution of Q2.1 (UCS, cost model B) is:")
-            print("Solution path:", show(path))
+
+            if model == heuristic_one:
+                print("The solution of Q3.1 (Heuristic 1) is:")
+            else:
+                print("The solution of Q3.1 (Heuristic 2) is:")
+
+            print("Solution Path:", show(path))
             print("Total cost:", cost)
             print("Number of node expansions:", expand)
             break
@@ -115,10 +120,17 @@ def ucs(state, model):
         expand += 1
         for node, m, c in successor(state):
             if node not in path:
-                tie_breaker += 1
-                heapq.heappush(q, (cost + model(m, c, state[4]), tie_breaker, node, path + [node]))
+                action_cost= 2*m + c
+
+                new_cost = cost +action_cost
+
+                tie_breaker+= 1
+
+                f_cost= new_cost + model(node)
+
+                heapq.heappush(q, (f_cost, tie_breaker, new_cost, node, path +[node]))
 
 start = read_state()
-ucs(start, model_a)
+A_star(start, heuristic_one)
 print()
-ucs(start, model_b)
+A_star(start, heuristic_two)

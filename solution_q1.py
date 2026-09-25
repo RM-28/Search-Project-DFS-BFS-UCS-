@@ -83,7 +83,7 @@ def DFS(start):
         p = fringe.pop()
         s = p[-1]
 
-        if s[0] == 0 and s[1] == 0:
+        if s ==(0,0,3,3,"R"):
             return p, expand
         expand += 1
 
